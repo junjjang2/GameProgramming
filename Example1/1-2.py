@@ -1,0 +1,5 @@
+print("a divided by b")
+a=int(input("a = "))
+b=int(input("b = "))
+print("quotient : ", a//b)
+print("remainder : ", a % b)

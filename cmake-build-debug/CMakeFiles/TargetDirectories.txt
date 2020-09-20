@@ -1,0 +1,3 @@
+C:/Users/82103/CLionProjects/Python_Class/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/82103/CLionProjects/Python_Class/cmake-build-debug/CMakeFiles/Python_Class.dir
+C:/Users/82103/CLionProjects/Python_Class/cmake-build-debug/CMakeFiles/rebuild_cache.dir
