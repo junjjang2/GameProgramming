@@ -29,27 +29,40 @@ class Actor(cocos.sprite.Sprite):
     def collide(self, other):
         pass
 
+
 class PlayerCannon(Actor):
     KEYS_PRESSED = defaultdict(int)
 
     def __init__(self, x, y):
         super(PlayerCannon, self).__init__('img/cannon.png', x, y)
         self.speed = eu.Vector2(200, 0)
+        self.shootdelay = 0.0
+        self.shootperiod = 0.5
 
     def update(self, elapsed):
         pressed = PlayerCannon.KEYS_PRESSED
         space_pressed = pressed[key.SPACE] == 1
-        if PlayerShoot.INSTANCE is None and space_pressed:
+        #if PlayerShoot.INSTANCE is None and space_pressed:
+        self.shootdelay += elapsed
+        print(self.position)
+        if self.shootdelay > self.shootperiod and space_pressed:
+            self.shootdelay = 0
             self.parent.add(PlayerShoot(self.x, self.y + 50))
-
         movement = pressed[key.RIGHT] - pressed[key.LEFT]
         w = self.width * 0.5
         if movement != 0 and w <= self.x <= self.parent.width - w:
-            self.move(self.speed * movement * elapsed)
+            if self.x + self.speed[0] * movement * elapsed < w:
+                self.position = eu.Vector2(w, self.position[1])
+            elif self.x + self.speed[0] * movement * elapsed > self.parent.width - w:
+                self.position = eu.Vector2(self.parent.width - w, self.position[1])
+            else:
+                self.move(self.speed * movement * elapsed)
+
 
     def collide(self, other):
         other.kill()
         self.kill()
+
 
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
@@ -96,7 +109,8 @@ class GameLayer(cocos.layer.Layer):
             self.collman.add(node)
             if not self.collman.knows(node):
                 self.remove(node)
-        self.collide(PlayerShoot.INSTANCE)
+        for shoot in PlayerShoot.INSTANCES:
+            self.collide(shoot)
         if self.collide(self.player):
             self.respawn_player()
 
@@ -213,13 +227,14 @@ class Shoot(Actor):
         self.move(self.speed * elapsed)
 
 class PlayerShoot(Shoot):
-    INSTANCE = None
+    INSTANCES = []
+    #INSTANCE = None
 
     def __init__(self, x, y):
         super(PlayerShoot, self).__init__(x, y, 'img/laser.png')
         self.speed *= -1
-        PlayerShoot.INSTANCE = self
-
+        #PlayerShoot.INSTANCE = self
+        PlayerShoot.INSTANCES.append(self)
     def collide(self, other):
         if isinstance(other, Alien):
             self.parent.update_score(other.score)
@@ -228,7 +243,8 @@ class PlayerShoot(Shoot):
 
     def on_exit(self):
         super(PlayerShoot, self).on_exit()
-        PlayerShoot.INSTANCE = None
+        #PlayerShoot.INSTANCE = None
+        PlayerShoot.INSTANCES.remove(self)
 
 class HUD(cocos.layer.Layer):
     def __init__(self):
