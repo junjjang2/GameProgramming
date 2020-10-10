@@ -8,9 +8,6 @@ class GameObject(object):
         self.canvas = canvas
         self.item = item
 
-    def get_postion(self):
-        return self.canvas.coords(self.item)
-
     def delete(self):
         self.canvas.delete(self.item)
 
@@ -81,8 +78,8 @@ class Game(tk.Frame):
         menubar = tk.Menu(master)
         filemenu = tk.Menu(menubar, tearoff=0)
         for i in range(3):
-            filemenu.add_command(label="%d*%d" % (self.levelsetting[i][0], self.levelsetting[i][1]), \
-                                 command=lambda i=i: self.begin(i))
+            filemenu.add_command(label="%d*%d" % (self.levelsetting[i][0], self.levelsetting[i][1]),
+                                 command=lambda x=i: self.begin(x))
 
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=master.destroy)
@@ -118,6 +115,9 @@ class Game(tk.Frame):
         self.canvas.pack()
         self.pack()
         self.canvas.focus_set()
+
+        self.canvas.bind('<Button-1>', self.left_button)
+        self.canvas.bind('<Button-3>', self.right_button)
 
         self.setup_level()
         self.set_number()
@@ -170,7 +170,7 @@ class Game(tk.Frame):
         left_tiles = len([x for x in self.canvas.find_withtag('tile') if not self.items[x].isopen()])
         if left_tiles == self.levelsetting[self.level][2] - \
                 len([x for x in self.canvas.find_withtag('tile') if self.items[x].isopen() if
-                     self.items[x].get_number() is -1]):
+                     self.items[x].get_number() == -1]):
             for i in range(1, self.levelsetting[self.level][0] * self.levelsetting[self.level][1] + 1):
                 self.items[i].open()
             self.draw_text('Win', 'You Win!')
@@ -179,7 +179,7 @@ class Game(tk.Frame):
         tk.messagebox.showinfo(label, text)
 
     def find_zero(self, idx):
-        if self.items[idx].get_number() is not 0 or self.items[idx].isOpened:
+        if self.items[idx].get_number() != 0 or self.items[idx].isOpened:
             self.items[idx].open()
             return
         else:
@@ -188,23 +188,23 @@ class Game(tk.Frame):
         width = self.levelsetting[self.level][1]
 
         if idx > height:
-            if idx - height - 1 > 0 and idx % height is not 1:
+            if idx - height - 1 > 0 and idx % height != 1:
                 self.find_zero(idx - height - 1)
             self.find_zero(idx - height)
-            if idx - height + 1 > 0 and idx % height is not 0:
+            if idx - height + 1 > 0 and idx % height != 0:
                 self.find_zero(idx - height + 1)
 
-        if idx % height is not 1:
+        if idx % height != 1:
             self.find_zero(idx - 1)
 
-        if idx % height is not 0:
+        if idx % height != 0:
             self.find_zero(idx + 1)
 
         if idx < height * (width - 1) + 1:
-            if idx % height is not 1:
+            if idx % height != 1:
                 self.find_zero(idx + height - 1)
             self.find_zero(idx + height)
-            if idx % height is not 0:
+            if idx % height != 0:
                 self.find_zero(idx + height + 1)
 
     def set_number(self):
@@ -212,34 +212,34 @@ class Game(tk.Frame):
         width = self.levelsetting[self.level][1]
 
         for idx in range(1, height * width + 1):
-            if self.items[idx].get_number() is -1:
+            if self.items[idx].get_number() == -1:
                 continue
             if idx > height:
-                if idx - height - 1 > 0 and idx % height is not 1:
-                    if self.items[idx - height - 1].get_number() is -1:
+                if idx - height - 1 > 0 and idx % height != 1:
+                    if self.items[idx - height - 1].get_number() == -1:
                         self.items[idx].add_number()
-                if self.items[idx - height].get_number() is -1:
+                if self.items[idx - height].get_number() == -1:
                     self.items[idx].add_number()
-                if idx - height + 1 > 0 and idx % height is not 0:
-                    if self.items[idx - height + 1].get_number() is -1:
+                if idx - height + 1 > 0 and idx % height != 0:
+                    if self.items[idx - height + 1].get_number() == -1:
                         self.items[idx].add_number()
 
-            if idx % height is not 1:
-                if self.items[idx - 1].get_number() is -1:
+            if idx % height != 1:
+                if self.items[idx - 1].get_number() == -1:
                     self.items[idx].add_number()
 
-            if idx % height is not 0:
-                if self.items[idx + 1].get_number() is -1:
+            if idx % height != 0:
+                if self.items[idx + 1].get_number() == -1:
                     self.items[idx].add_number()
 
             if idx < height * (width - 1) + 1:
-                if idx % height is not 1:
-                    if self.items[idx + height - 1].get_number() is -1:
+                if idx % height != 1:
+                    if self.items[idx + height - 1].get_number() == -1:
                         self.items[idx].add_number()
-                if self.items[idx + height].get_number() is -1:
+                if self.items[idx + height].get_number() == -1:
                     self.items[idx].add_number()
-                if idx % height is not 0:
-                    if self.items[idx + height + 1].get_number() is -1:
+                if idx % height != 0:
+                    if self.items[idx + height + 1].get_number() == -1:
                         self.items[idx].add_number()
 
 
