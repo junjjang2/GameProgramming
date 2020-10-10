@@ -118,8 +118,6 @@ class Game(tk.Frame):
         self.canvas.pack()
         self.pack()
         self.canvas.focus_set()
-        self.canvas.bind('<Button-1>', self.left_button)
-        self.canvas.bind('<Button-3>', self.right_button)
 
         self.setup_level()
         self.set_number()
